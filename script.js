@@ -1,3 +1,4 @@
+// main wrapper, makes sure the DOM is loaded before running the script
 document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
@@ -9,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
         canvas.height = window.innerHeight;
     }
     
+    // Resize canvas on window resize
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
     
@@ -136,13 +138,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Event listeners
     document.addEventListener('keydown', (event) => {
-        // ESC key exits/clears
-        if (event.key === 'Escape') {
-            ctx.fillStyle = 'black';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            return;
-        }
-        
         // Only respond to letter keys
         if (/^[a-zA-Z]$/.test(event.key)) {
             playAlienSound();
