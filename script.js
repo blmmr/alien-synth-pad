@@ -1,3 +1,6 @@
+// initialize activeNodes array to keep track of active nodes
+const activeNodes = [];
+
 // main wrapper, makes sure the DOM is loaded before running the script
 document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.getElementById('canvas');
@@ -104,6 +107,8 @@ document.addEventListener('DOMContentLoaded', () => {
         osc1.start();
         osc2.start();
         modOsc.start();
+        // Keeps track of the active nodes
+        activeNodes.push({osc1, osc2, modOsc, filterLFO, actx});
 
         const stopTime = now + attack + decay + sustain + release;
         osc1.stop(stopTime);
@@ -169,10 +174,28 @@ document.addEventListener('DOMContentLoaded', () => {
         draw();
     }
 
+
+    // Stop all active sounds
+    function stopAllSounds() {
+        const now = audioContext?.currentTime || 0;
+        activeNodes.forEach(({osc1, osc2, modOsc, filterLFO}) => {
+            try {
+                osc1.stop(now);
+                osc2.stop(now);
+                modOsc.stop(now);
+                filterLFO.stop(now);
+            } catch (e) {}
+        });
+        activeNodes.length = 0;
+    }
+
     // Event listeners
     document.addEventListener('keydown', (event) => {
         if (/^[a-zA-Z]$/.test(event.key)) {
             playAlienSound();
         }
+        if (event.key === 'Escape') {
+            stopAllSounds();
+        }        
     });
 });
