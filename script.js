@@ -56,10 +56,20 @@ document.addEventListener('DOMContentLoaded', () => {
         filter.frequency.value = Math.random() * 3000 + 500;
         filter.Q.value = Math.random() * 10 + 1;
         
-        // Setup gain
-        gainNode.gain.value = 0.3;
-        gainNode.gain.setValueAtTime(0.3, actx.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, actx.currentTime + 1);
+        // Set up ADSR envelope
+        const now = actx.currentTime;
+        const attack = 0.5;
+        const decay = 1.0;
+        const sustain = 2.0;
+        const release = 2.0;
+        const maxGain = 0.3;
+        const sustainLevel = 0.1;
+
+        gainNode.gain.setValueAtTime(0, now);
+        gainNode.gain.linearRampToValueAtTime(maxGain, now + attack); // Attack
+        gainNode.gain.linearRampToValueAtTime(sustainLevel, now + attack + decay); // Decay
+        gainNode.gain.setValueAtTime(sustainLevel, now + attack + decay + sustain); // Sustain
+        gainNode.gain.linearRampToValueAtTime(0.0001, now + attack + decay + sustain + release); // Release
         
         // Connect nodes
         modOsc.connect(modGain);
@@ -76,9 +86,11 @@ document.addEventListener('DOMContentLoaded', () => {
         // Visualize
         drawCircularVisualizer(analyser, dataArray, bufferLength);
         
-        // Stop sound after a second
-        modOsc.stop(actx.currentTime + 1);
-        mainOsc.stop(actx.currentTime + 1);
+        // Stop sound after a second (ADSR)
+        const stopTime = now + attack + decay + sustain + release;
+        modOsc.stop(stopTime);
+        mainOsc.stop(stopTime);
+
     }
 
     // drawCircularVisualizer
