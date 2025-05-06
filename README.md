@@ -12,6 +12,9 @@ The program is automatically deployed using GitHub Pages.
 - Press any letter key to play a sound
 - Press `Escape` to stop all sounds
 
+## ⚙️ In progress
+Circular vspectrum visualizer to be replaced with [circular-audio-wave](https://github.com/kelvinau/circular-audio-wave)
+
 ## CI/CD & Security
 
 ### ✅ GitHub Actions Workflow
