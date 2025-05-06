@@ -30,14 +30,15 @@ jobs:
     - name: Publish Trivy Output to Summary
       run: |
         if [[ -s trivy.txt ]]; then
-        {
-            echo "### Security Output"
-            echo "<details><summary>Click to expand</summary>"
-            echo ""
-            echo '```text'
-            cat trivy.txt
-            echo '```'
-            echo "</details>"
-        } >> $GITHUB_STEP_SUMMARY
+            {
+                echo "### Security Output"
+                echo "<details><summary>Click to expand</summary>"
+                echo ""
+                echo '```text'
+                cat trivy.txt
+                echo '```'
+                echo "</details>"
+            } >> $GITHUB_STEP_SUMMARY
         else
             echo "No vulnerabilities found." >> $GITHUB_STEP_SUMMARY
+        fi
