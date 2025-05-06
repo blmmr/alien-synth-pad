@@ -40,4 +40,4 @@ jobs:
             echo "</details>"
         } >> $GITHUB_STEP_SUMMARY
         else
-        echo "No vulnerabilities found." >> $GITHUB_STEP_SUMMARY
+            echo "No vulnerabilities found." >> $GITHUB_STEP_SUMMARY
