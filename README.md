@@ -4,6 +4,8 @@ This project generates alien-like ambient sounds triggered by keypresses and vis
 
 The program is automatically deployed using GitHub Pages.
 
+Live: [blmmr.github.io/alien-synth-pad](https://blmmr.github.io/alien-synth-pad/)
+
 ## Features
 
 - Interactive sound generation via keyboard input
