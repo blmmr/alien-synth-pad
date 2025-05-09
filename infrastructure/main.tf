@@ -10,12 +10,12 @@ resource "google_project_service" "required_apis" {
     "artifactregistry.googleapis.com",
     "cloudbuild.googleapis.com"
   ])
-  
+
   project = var.project_id
   service = each.key
 
   disable_dependent_services = false
-  disable_on_destroy        = false
+  disable_on_destroy         = false
 }
 
 # Create Artifact Registry repository
@@ -36,7 +36,7 @@ resource "google_cloud_run_v2_service" "app" {
   template {
     containers {
       image = "${var.region}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.app_repo.repository_id}/alien-synth-pad:latest"
-      
+
       resources {
         limits = {
           cpu    = "1000m"
