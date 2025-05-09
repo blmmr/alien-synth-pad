@@ -1,0 +1,65 @@
+name: Deploy the application to GCP
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  build-publish-deploy:
+    name: Build and deploy the backend service to Cloud Run
+    runs-on: ubuntu-latest
+
+    env:
+      SERVICE_NAME: alien-synth-pad
+      SERVICE_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+      ENVIRONMENT: production
+      IMAGE_TAG: ${{ github.sha }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Authenticate with Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.SA_KEY }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          version: ">= 506.0.0"
+          project_id: ${{ env.SERVICE_PROJECT_ID }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "~>1.10.4"
+
+      - name: Terraform Init
+        id: init
+        working-directory: infrastructure/
+        run: terraform init
+
+      - name: Build and Push Docker Image
+        run: |
+          gcloud auth configure-docker eu.gcr.io
+
+          docker build \
+            --tag "eu.gcr.io/$SERVICE_PROJECT_ID/$SERVICE_NAME-service:$IMAGE_TAG" \
+            -f Dockerfile .
+
+          docker push "eu.gcr.io/$SERVICE_PROJECT_ID/$SERVICE_NAME-service:$IMAGE_TAG"
+
+      - name: Terraform Apply
+        working-directory: infrastructure/
+        run: terraform apply -var-file="${{ env.ENVIRONMENT }}.tfvars" -auto-approve
+        env:
+          TF_VAR_sha: "${{ env.IMAGE_TAG }}"
+          TF_VAR_service_name: "${{ env.SERVICE_NAME }}"

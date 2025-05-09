@@ -1,0 +1,96 @@
+name: Plan, build, and publish deployment of the backend application to Cloud Run
+
+on:
+  pull_request:
+    branches:
+      - main
+      - google-cloud-platform
+
+jobs:
+  build-publish-plan:
+    runs-on: ubuntu-latest
+
+    env:
+      SERVICE_NAME: alien-synth-pad
+      SERVICE_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+      ENVIRONMENT: production
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Authenticate with Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.SA_KEY }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          version: ">= 506.0.0"
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "~>1.10.4"
+
+      - name: Terraform Init
+        id: init
+        working-directory: infrastructure/
+        run: terraform init
+
+      - name: Authorize Docker
+        run: gcloud auth configure-docker eu.gcr.io
+
+      - name: Build Docker image
+        run: |
+          docker build \
+            --tag "eu.gcr.io/$SERVICE_PROJECT_ID/$SERVICE_NAME-service:$GITHUB_SHA" \
+            -f Dockerfile .
+
+      - name: Publish Docker image
+        run: docker push --all-tags "eu.gcr.io/$SERVICE_PROJECT_ID/$SERVICE_NAME-service"
+
+      - name: Terraform Fmt
+        id: fmt
+        working-directory: infrastructure/
+        run: terraform fmt -check -no-color
+
+      - name: Terraform Validate
+        id: validate
+        working-directory: infrastructure/
+        run: terraform validate -no-color
+
+      - name: Terraform Plan
+        id: plan
+        working-directory: infrastructure/
+        run: terraform plan -var-file="${{ env.ENVIRONMENT }}.tfvars" -no-color
+        env:
+          TF_VAR_sha: ${{ github.sha }}
+          TF_VAR_service_name: "${{ env.SERVICE_NAME }}"
+
+      - name: Find Comment
+        uses: peter-evans/find-comment@v3
+        id: fc
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: "### Terraform Plan Output:"
+
+      - name: Create or Update Terraform Plan comment
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          body: |
+            ### Terraform Plan Output:
+            #### Terraform init: ${{ steps.init.outcome }}
+            #### Terraform fmt: ${{ steps.fmt.outcome }}
+            #### Terraform validate: ${{ steps.validate.outcome }}
+            #### Terraform plan: ${{ steps.plan.outcome }}
+          reactions: rocket
+          edit-mode: replace
+
+      - name: Terraform Plan Status
+        if: steps.init.outcome != 'success' || steps.fmt.outcome != 'success' || steps.validate.outcome != 'success' || steps.plan.outcome != 'success'
+        run: exit 1

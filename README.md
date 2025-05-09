@@ -1,58 +1,30 @@
-# alien-synth-pad
+# Alien Synth Pad
 
-This project generates alien-like ambient sounds triggered by keypresses and visualizes them in a circular spectrum using the Web Audio API and HTML5 Canvas.
-
-The program is automatically deployed using GitHub Pages.
-
-Live: [blmmr.github.io/alien-synth-pad](https://blmmr.github.io/alien-synth-pad/)
+An interactive web application that generates ambient/alien sounds with visual effects. Press any letter key to create unique sounds, and press ESC to stop all sounds.
 
 ## Features
+- Interactive sound generation with Web Audio API
+- Real-time circular visualizer
+- Responsive full-screen canvas
+- Unique alien/ambient sound synthesis
 
-- Interactive sound generation via keyboard input
-- ADSR envelopes, modulation, filters, and delay effects
-- Circular spectrum visualizer with dynamic gradient
-- Press any letter key to play a sound
-- Press `Escape` to stop all sounds
+## Running Locally
 
-## ⚙️ In progress
-Circular vspectrum visualizer to be replaced with [circular-audio-wave](https://github.com/kelvinau/circular-audio-wave)
+### Using Docker
+```bash
+# Build the Docker image
+docker build -t alien-synth-pad .
 
-## CI/CD & Security
+# Run the container
+docker run -p 8080:80 alien-synth-pad
+```
 
-### ✅ GitHub Actions Workflow
+### Security Checks
+```bash
+trivy fs .
+```
 
-This repo uses two workflows triggered on every push to `main`:
-
-1. **Trivy Security Scanning**
-   - Scans the full project directory in filesystem (`fs`) mode.
-   - Outputs results to a `trivy.txt` file.
-   - Publishes findings in the GitHub Actions summary.
-
-2. **Deploy to GitHub Pages**
-   - Automatically deploys static files in the root directory.
-   - Makes the app available at GitHub Pages after every push.
-
-### 📄 Key Workflow Files
-
-- `.github/workflows/deploy.yml`:  
-  Handles page deployment.
-
-- `.github/workflows/security_check.yml`:  
-  Installs and runs Trivy to check for vulnerabilities.
-
-### 🔒 Security Tools Used
-
-- [Trivy](https://github.com/aquasecurity/trivy): Vulnerability scanner for containers, filesystems, and Git repos.
-  - Version: `v0.57.1`
-  - Runs in GitHub-hosted Ubuntu runners.
-
-### Sample Security Output (GitHub Summary)
-
-<details>
-<summary>Click to expand</summary>
-
-```text
-# Example Trivy output
-testfile.js (node)
-===================
-Total: 0 (HIGH: 0, MEDIUM: 0, LOW: 0)
+## Deployment
+The application is deployed to Google Cloud Run. Required secrets for deployment:
+- `GCP_PROJECT_ID`: Google Cloud Platform project ID
+- `SA_KEY`: Google Cloud service account credentials (JSON)
