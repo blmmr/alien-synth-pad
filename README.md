@@ -10,7 +10,7 @@ An interactive web application that generates ambient/alien sounds with visual e
 
 ## Running Locally
 
-### Using Docker
+### Using Docker 
 ```bash
 # Build the Docker image
 docker build -t alien-synth-pad .
