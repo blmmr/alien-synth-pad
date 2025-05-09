@@ -59,7 +59,8 @@ jobs:
 
       - name: Terraform Apply
         working-directory: infrastructure/
-        run: terraform apply -var-file="${{ env.ENVIRONMENT }}.tfvars" -auto-approve
+        run: terraform apply -auto-approve
         env:
-          TF_VAR_sha: "${{ env.IMAGE_TAG }}"
-          TF_VAR_service_name: "${{ env.SERVICE_NAME }}"
+            TF_VAR_sha: "${{ env.IMAGE_TAG }}"
+            TF_VAR_service_name: "${{ env.SERVICE_NAME }}"
+            TF_VAR_project_id: "${{ env.SERVICE_PROJECT_ID }}"

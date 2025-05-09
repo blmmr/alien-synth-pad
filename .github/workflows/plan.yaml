@@ -65,7 +65,11 @@ jobs:
       - name: Terraform Plan
         id: plan
         working-directory: infrastructure/
-        run: terraform plan -no-color
+        run: |
+          terraform plan -no-color > plan.txt
+          echo "PLAN_OUTPUT<<EOF" >> $GITHUB_ENV
+          cat plan.txt >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
         env:
           TF_VAR_sha: ${{ github.sha }}
           TF_VAR_service_name: "${{ env.SERVICE_NAME }}"
@@ -90,6 +94,14 @@ jobs:
             #### Terraform fmt: ${{ steps.fmt.outcome }}
             #### Terraform validate: ${{ steps.validate.outcome }}
             #### Terraform plan: ${{ steps.plan.outcome }}
+
+            <details>
+            <summary>Plan Details</summary>
+
+            ```
+            ${{ env.PLAN_OUTPUT }}
+            ```
+            </details>
           reactions: rocket
           edit-mode: replace
 
