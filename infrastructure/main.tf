@@ -1,6 +1,6 @@
 provider "google" {
   project = var.project_id
-  region  = var.region
+  region  = "eu-north2"
 }
 
 # Enable required APIs
