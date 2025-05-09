@@ -1,5 +1,4 @@
 # Alien Synth Pad
-
 An interactive web application that generates ambient/alien sounds with visual effects. Press any letter key to create unique sounds, and press ESC to stop all sounds.
 
 ## Features
