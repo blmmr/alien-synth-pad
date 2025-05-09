@@ -1,0 +1,14 @@
+exit-code: 1
+severity:
+  - MEDIUM
+  - HIGH
+  - CRITICAL
+
+scan:
+  security-checks:
+    - vuln # Codebase, libraries, and dependencies
+    - secret # API keys, passwords
+    - misconfig # Terraform, Dockerfile
+
+misconfiguration:
+  include-non-failures: false
