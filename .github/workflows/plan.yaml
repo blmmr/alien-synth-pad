@@ -69,6 +69,7 @@ jobs:
         env:
           TF_VAR_sha: ${{ github.sha }}
           TF_VAR_service_name: "${{ env.SERVICE_NAME }}"
+          TF_VAR_project_id: "${{ env.SERVICE_PROJECT_ID }}"
 
       - name: Find Comment
         uses: peter-evans/find-comment@v3
