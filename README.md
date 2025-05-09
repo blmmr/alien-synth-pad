@@ -7,7 +7,7 @@ An interactive web application that generates ambient/alien sounds with visual e
 - Responsive full-screen canvas
 - Unique alien/ambient sound synthesis
 
-## Running Locally
+## Running Locally 
 
 ### Using Docker 
 ```bash
